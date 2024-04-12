@@ -96,7 +96,7 @@ def generate_final_report(data):
     conv_prompt = PromptTemplate.from_template("""You are an expert mental therapist./
     We are providing you with the a conversational data between between a user and a assessment chatbot. /
     Based on the conversation history provided, you have to output a final assessment of the user. We have also tagged all the user sentences with emotions detection deep learning model, please consider the emotions while generating the response./
-    Return the response only as a json object with the following keys and value-/ condition_of_patient : basic/mediocre/severe/, possible_causes : [list of possible causes discussed],/
+    Return the response only as a json object starting and ending with curly brackets with the following keys and value-/ condition_of_patient : basic/mediocre/severe/, possible_causes : [list of possible causes discussed],/
     
                                                
     **Conversation History:**
@@ -136,61 +136,62 @@ async def startup(ctx: Context):
     initial_msg="Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? "
     ctx.logger.info(initial_msg)
 
-    initial_msg_store=f"Assessment Agent : {initial_msg}"
+    # initial_msg_store=f"Assessment Agent : {initial_msg}"
 
-    filename=ctx.storage.get("filename")
+    # filename=ctx.storage.get("filename")
 
-    append_to_file(filename=filename,value=initial_msg_store)
-    # conversation_history = initial_msg
-    #store initial message in storage
-    # ctx.storage.set("conversation_history",initial_msg)
+    # append_to_file(filename=filename,value=initial_msg_store)
+    user_input=input("User : ")
+    emotion=get_emotion(user_input)
+    user_msg_store = f" User : {user_input} ->[emotion prediction : {emotion}]"
+    conversation=f"Assessment Agent: {initial_msg} \n\n User: {user_msg_store}"
 
-    # print(ctx.storage.get("conversation_history"))
-    await ctx.send(user_agent.address, ai_message(msg=initial_msg))
+    await ctx.send(therapy_agent.address, ai_message(msg=conversation))
                    
-@user_agent.on_message(ai_message)
-async def handle_message(ctx: Context, sender:str, message: ai_message):
-    #take user input
-    if ctx.storage.has("filename"):
-       filename=ctx.storage.get("filename")
-    else:
-       filename = "src/agents/msgs.txt"
-       ctx.storage.set("filename",'src/agents/msgs.txt')
+# @user_agent.on_message(ai_message)
+# async def handle_message(ctx: Context, sender:str, message: ai_message):
+#     #take user input
+#     if ctx.storage.has("filename"):
+#        filename=ctx.storage.get("filename")
+#     else:
+#        filename = "src/agents/msgs.txt"
+#        ctx.storage.set("filename",'src/agents/msgs.txt')
        
     
-    user_input = input("User: ")
-    if user_input=="bye":
-       print("inside exit")
-       await ctx.send(therapy_agent.address, user_message(msg=filename))
-    else :    
-        emotion=get_emotion(user_input)
-        user_msg_store = f" User : {user_input} -> [Emotion Detection : {emotion}]"
+#     user_input = input("User: ")
+#     if user_input=="bye":
+#        print("inside exit")
+#        await ctx.send(therapy_agent.address, user_message(msg=filename))
+#     else :    
+#         emotion=get_emotion(user_input)
+#         user_msg_store = f" User : {user_input} -> [Emotion Detection : {emotion}]"
         
-        #append user message to file
-        # print(filename)
-        append_to_file(filename=filename, value=user_msg_store)
-        # print("appended to txt file")
+#         #append user message to file
+#         # print(filename)
+#         append_to_file(filename=filename, value=user_msg_store)
+#         # print("appended to txt file")
 
-        await ctx.send(ass_agent.address, user_message(msg=user_input))
+#         await ctx.send(ass_agent.address, user_message(msg=user_input))
 
-@ass_agent.on_message(user_message)
-async def handle_user_message(ctx: Context, sender:str, message: user_message):
-    # user_message=message.msg
-    filename=ctx.storage.get("filename")
+# @ass_agent.on_message(user_message)
+# async def handle_user_message(ctx: Context, sender:str, message: user_message):
+#     # user_message=message.msg
+#     # filename=ctx.storage.get("filename")
 
-    response=generate_response(user_message=message.msg,filename=filename)
+#     response=generate_response(user_message=message.msg,filename=filename)
 
-    ctx.logger.info(response)
-    append_to_file(filename=filename, value=f"Assessment Agent : {response}")
-    await ctx.send(user_agent.address, ai_message(msg=response))
+#     ctx.logger.info(response)
+#     append_to_file(filename=filename, value=f"Assessment Agent : {response}")
+#     await ctx.send(user_agent.address, ai_message(msg=response))
 
-@therapy_agent.on_message(user_message)
-async def user_message_handler(ctx: Context, sender:str, message: user_message):
+@therapy_agent.on_message(ai_message)
+async def user_message_handler(ctx: Context, sender:str, message: ai_message):
     ctx.logger.info("generating final report")
-    data=read_file_as_string(filename=message.msg)
-    response=generate_final_report(data)
+    # data=read_file_as_string(filename=message.msg)
+    response=generate_final_report(message.msg)
+    print(response)
     response = json.loads(response)
-
+ 
     ctx.logger.info(response)
     if response["condition_of_patient"] == "severe":
         ctx.logger.info("We have analysed your condition and we think that you should consult to a therapist. \n Please enter your city : ")
