@@ -1,0 +1,18 @@
+Assessment Agent : Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? 
+ User : im frustrated -> [Emotion Detection : anger]
+Assessment Agent : I understand that you're feeling frustrated. Can you tell me what has been causing this frustration? Are there any specific situations or people that trigger these feelings?
+ User : im not able to understand whats going on -> [Emotion Detection : fear]
+Assessment Agent : It's understandable to feel confused and overwhelmed when you're not sure what's happening. Can you describe the specific situations or thoughts that make you feel this way? Is there anything in your personal life, such as relationships or health issues, that may be contributing to these feelings?
+ User : im having tought time figuring out whats going on  -> [Emotion Detection : fear]
+Assessment Agent : I understand that you're going through a difficult time trying to understand what's happening in your life. It can be overwhelming and confusing when you feel lost and uncertain. Can you tell me more about the specific challenges or situations you're facing? Is there anything in your personal or professional life that you're struggling with? Knowing more about the context can help me better understand your concerns and provide support.
+ User : i dont know what should i do -> [Emotion Detection : fear]
+Assessment Agent : I understand that you're feeling lost and unsure of what to do. It's common to experience these feelings when faced with challenges or difficult situations. Can you tell me more about what's causing you to feel this way? Is there anything specific that's making you feel overwhelmed or uncertain? Sharing your thoughts and concerns can help me better understand your situation and provide guidance.
+Assessment Agent : Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? 
+ User : hi im pt. i have depression -> [Emotion Detection : sadness]
+Assessment Agent : Hi Pt, thank you for reaching out. I understand that you're struggling with depression. Can you tell me a bit more about what you're experiencing? How long have you been feeling this way? Have you noticed any specific triggers or events that may have contributed to your depression?
+Assessment Agent : Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? 
+ User : hi i am streesed -> [Emotion Detection : joy]
+Assessment Agent : Hello, I understand that you're feeling stressed. Can you tell me a bit more about what's been causing this stress? Are there any specific situations or people that trigger these feelings? Have you noticed any physical or emotional symptoms associated with your stress, such as difficulty sleeping, changes in appetite, or feeling overwhelmed? Sharing more details can help me better understand your situation and provide support.
+Assessment Agent : Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? 
+ User : hi im pratham -> [Emotion Detection : joy]
+Assessment Agent : Hi Pratham, it's nice to meet you. Can you tell me a bit more about yourself and what brings you here today? Are there any specific concerns or challenges you're facing that you'd like to discuss?

@@ -12,6 +12,7 @@ from langchain.chains import LLMChain
 from transformers import AutoTokenizer, AutoModelWithLMHead
 import warnings
 import re
+
 warnings.filterwarnings("ignore", category=FutureWarning)  # To suppress the first warning
 warnings.filterwarnings("ignore", category=UserWarning)
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion",use_fast=False,legacy=False)
@@ -74,13 +75,15 @@ def generate_response(user_message,filename):
     response=conv_chain.run(conversation_history=conversation_history,user_input=user_message)
     return response
 
-def generate_final_report(filename):
-    filename=filename
-    conversation_history=read_file_as_string(filename=filename)
+def generate_final_report(data):
+    # filename=filename 
+    data=data
+    # conversation_history=read_file_as_string(filename=filename)
     conv_prompt = PromptTemplate.from_template("""You are an expert mental therapist./
-        Your task is to confront the user for his problems and ask critical questions to understand his mental health. You have to somehow ask the user about his symptoms, possible causes(relationship issues, health issues, sad demise) and carry on the conversation. The following is the conversation so far, continue asking questions. \
-        Speak with the user in a very assistive and helpful manner.
-
+    We are providing you with the a conversational data between between a user and a assessment chatbot. /
+    Based on the conversation history provided, you have to output a final assessment of the user. We have also tagged all the user sentences with emotions detection deep learning model, please consider the emotions while generating the response./
+    Return the response only as a json object with the following keys and value-/ condition_of_patient : basic/mediocre/severe/, possible_causes : [list of possible causes discussed],/
+    
                                                
     **Conversation History:**
 
@@ -90,7 +93,7 @@ def generate_final_report(filename):
 
     conv_chain = LLMChain(llm=llm, prompt=conv_prompt, verbose=False)
     # conversation_history=""
-    response=conv_chain.run(conversation_history=conversation_history)
+    response=conv_chain.run(conversation_history=data)
     return response
   
 # Example usage
@@ -144,10 +147,8 @@ async def handle_message(ctx: Context, sender:str, message: ai_message):
     user_input = input("User: ")
     if user_input=="bye":
        print("inside exit")
-       await ctx.send(therapy_agent.address, user_message(msg=user_input))
+       await ctx.send(therapy_agent.address, user_message(msg=filename))
     else :    
-    
-    
         emotion=get_emotion(user_input)
         user_msg_store = f" User : {user_input} -> [Emotion Detection : {emotion}]"
         
@@ -172,6 +173,10 @@ async def handle_user_message(ctx: Context, sender:str, message: user_message):
 @therapy_agent.on_message(user_message)
 async def user_message_handler(ctx: Context, sender:str, message: user_message):
     ctx.logger.info("generating final report")
+    data=read_file_as_string(filename=message.msg)
+    response=generate_final_report(data)
+    ctx.logger.info(response)
+    
 
 
 b=Bureau()
