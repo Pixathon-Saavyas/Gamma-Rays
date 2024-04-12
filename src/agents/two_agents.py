@@ -7,7 +7,7 @@ from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain
 
-
+import json
 
 from transformers import AutoTokenizer, AutoModelWithLMHead
 import warnings
@@ -31,6 +31,21 @@ def get_emotion(text):
   # return label
   return label
 
+import pandas as pd
+df=pd.read_csv("src/agents/data.csv")
+
+def get_top_5_therapists(city):
+    # Filter therapists based on the input city
+    therapists_in_city = df[df['city'].str.lower() == city.lower()]
+
+    if therapists_in_city.empty:
+        print("No therapists found in the specified city.")
+        return
+    
+    # Sort therapists based on years_of_exp in descending order and get the top 5
+    top_5_therapists = therapists_in_city.sort_values(by='years_of_exp', ascending=False).head(5)
+    
+    return top_5_therapists
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key="AIzaSyA0SThtOf3QoNJLr12CiDwkiTtUafL1rXE")
@@ -175,9 +190,17 @@ async def user_message_handler(ctx: Context, sender:str, message: user_message):
     ctx.logger.info("generating final report")
     data=read_file_as_string(filename=message.msg)
     response=generate_final_report(data)
-    ctx.logger.info(response)
-    
+    response = json.loads(response)
 
+    ctx.logger.info(response)
+    if response["condition_of_patient"] == "severe":
+        ctx.logger.info("We have analysed your condition and we think that you should consult to a therapist. \n Please enter your city : ")
+        city = input("City: ")
+        therapists=get_top_5_therapists(city)
+        ctx.logger.info(f"Here are top 5 therapists in {city} : \n {therapists}")
+        
+    else:
+        ctx.logger.info("We have analysed your condition and we think that you can get back into shape by doing this course : ")
 
 b=Bureau()
 b.add(user_agent)
