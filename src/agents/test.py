@@ -1,40 +1,36 @@
-import os
-# from dotenv import load_dotenv
-# import langchain as langchain
-from langchain.prompts.few_shot import FewShotPromptTemplate
-from langchain.prompts.prompt import PromptTemplate
-from langchain.chains import LLMChain
+from uagents import Agent, Context, Model
 
 
-# load_dotenv()
+class Message(Model):
+    message: str
 
-# GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key="AIzaSyA0SThtOf3QoNJLr12CiDwkiTtUafL1rXE")
 
-conv_prompt = PromptTemplate.from_template("""You are an expert mental therapist./
-        Your task is to confront the user for his problems and ask critical questions to understand his mental health. You have to somehow ask the user about his symptoms, possible causes(relationship issues, health issues, sad demise) and carry on the conversation. The following is the conversation so far, continue asking questions. \
-        Speak with the user in a very assistive and helpful manner.
+# First generate a secure seed phrase (e.g. https://pypi.org/project/mnemonic/)
+SEED_PHRASE = "test mailroom stuff"
 
-    **Conversation History:**
+# Copy the address shown below
+print(f"Your agent's address is: {Agent(seed=SEED_PHRASE).address}")
 
-    {conversation_history}
+# Then go to https://agentverse.ai, register your agent in the Mailroom
+# and copy the agent's mailbox key
+AGENT_MAILBOX_KEY = "3876e25c-75d7-4e0d-b221-39e4dee62783"
 
-    **User Input:**
+# Now your agent is ready to join the agentverse!
+agent = Agent(
+    name="alice",
+    seed=SEED_PHRASE,
+    mailbox=f"{AGENT_MAILBOX_KEY}@https://agentverse.ai",
+)
 
-    {user_input}
 
-    **Respond:**""")
+@agent.on_message(model=Message, replies={Message})
+async def handle_message(ctx: Context, sender: str, msg: Message):
+    ctx.logger.info(f"Received message from {sender}: {msg.message}")
 
-conv_chain = LLMChain(llm=llm, prompt=conv_prompt, verbose=True)
-conversation_history=""
+    # send the response
+    ctx.logger.info("Sending message to bob")
+    await ctx.send(sender, Message(message="hello there bob"))
 
-count=0
-while count!=10:
-  
-  user_input=input()
-  
-  response=conv_chain.run(conversation_history="",user_input=user_input)
-  print(response)
-  conversation_history= f"{conversation_history} \n\n user input : {user_input} response : {response} \n\n\n"
-  count=count+1
+
+if __name__ == "__main__":
+    agent.run()
