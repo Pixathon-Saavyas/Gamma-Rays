@@ -1,14 +1,20 @@
-from uagents import Model, Agent, Bureau, Context
+from uagents import Model, Agent, Context, Protocol
+
+"""
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain
 import json
-from transformers import AutoTokenizer, AutoModelWithLMHead
+from transformers import AutoTokenizer
 import warnings
 import re
 import pandas as pd
+"""
+from uagents.setup import fund_agent_if_low
+from ai_engine import UAgentResponse, UAgentResponseType
+from pydantic import Field
 
+'''
 warnings.filterwarnings(
     "ignore", category=FutureWarning
 )  # To suppress the first warning
@@ -62,30 +68,61 @@ def generate_final_report(data):
     response = conv_chain.run(conversation_history=data)
     return response
 
+'''
+
+
+class ai_message_city(Model):
+    city: str = Field(
+        description="City of the person, specifically ask the user the following: ENTER YOUR CITY: "
+    )
+
 
 filename = "src/agents/msgs.txt"
 
+SEED_PHRASE = "Agent for suggesting therapists"
+AGENT_MAILBOX_KEY = "c2761651-9175-438d-8a1e-86a4606d0be3"
 
-class ai_message(Model):
-    msg: str
+therapy_protocol = Protocol("Therapy Protocol")
 
 
 therapy_agent = Agent(
-    "Therapy",
-    seed="I give therapy",
-    port=8000,
-    endpoint=["http://127.0.0.1:8000/submit"],
+    name="Therapy",
+    seed=SEED_PHRASE,
+    mailbox=f"{AGENT_MAILBOX_KEY}@https://agentverse.ai",
 )
 
+# Ensure the agent has enough funds to operate, if not, fund it
+fund_agent_if_low(therapy_agent.wallet.address())
 
-@therapy_agent.on_message(ai_message)
-async def user_message_handler(ctx: Context, sender: str, message: ai_message):
+
+@therapy_agent.on_event("startup")
+async def on_startup(ctx: Context):
+    print(therapy_agent.address)
+
+
+async def get_top_5_therapists(city):
+    return "Good therapist"
+
+
+@therapy_protocol.on_message(model=ai_message_city, replies={UAgentResponse})
+async def user_message_handler(ctx: Context, sender: str, message: ai_message_city):
     ctx.logger.info("generating final report")
+
+    therapists = await get_top_5_therapists(message.city)
+    ctx.logger.info(f"Here are top 5 therapists in {message.city} : \n {therapists}")
+
+    await ctx.send(
+        sender,
+        UAgentResponse(
+            message=f"Here are top 5 therapists in {message.city} : \n {therapists}",
+            type=UAgentResponseType.FINAL,
+        ),
+    )
+
+    """
     response = generate_final_report(message.msg)
     print(response)
     response = json.loads(response)
-    ctx.logger.info(ctx.address)
-    ctx.logger.info(response)
     if response["condition_of_patient"] == "severe":
         ctx.logger.info(
             "We have analysed your condition and we think that you should consult to a therapist. \n Please enter your city : "
@@ -98,7 +135,11 @@ async def user_message_handler(ctx: Context, sender: str, message: ai_message):
         ctx.logger.info(
             "We have analysed your condition and we think that you can get back into shape by doing this course : "
         )
+    """
 
+
+# Include the therapy protocol in the agent's capabilities
+therapy_agent.include(therapy_protocol)
 
 if __name__ == "__main__":
     therapy_agent.run()
