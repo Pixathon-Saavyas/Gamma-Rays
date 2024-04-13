@@ -111,7 +111,15 @@ def generate_response(response):
             therapists = get_top_5_therapists(city="mumbai")
             resp=f"We have analysed your condition and we think that you should consult to a therapist. Here are top 5 therapists in Mumbai : \n {therapists}"
         else:
-            resp= "We have analysed your condition and we think that you can get back into shape by doing this course : "
+            resp= """ We have analysed your condition and we think that you can get back into shape easily with some self-care!
+             Here are some resources for you :
+
+1. https://www.verywellmind.com/ - *Blogs for self care*
+2. https://www.psychcentral.com/ -*Blogs for Mental Health awareness*
+3. https://www.amahahealth.com/therapy- *Website for booking mental health appointments*
+
+Govt Helpline :
+ 24/7 toll-free mental health rehabilitation helpline is 1800-599-0019, also known as Kiran. This helpline is available in 13 languages and was launched by the Ministry of Social Justice and Empowerment to provide support to people with mental illness."""
         return resp
     else:
         response=generate_gpt_response(user_message=response)

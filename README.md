@@ -9,7 +9,7 @@ This project is is part of the Fetch.ai hackathon submission at NIT Goa. We were
 
 ### 🏆 Our Goal
 
-We aimed to make use of the given model to build a mental health therapy platform. The chatbot detects emotions in user input and provides therapy recommendations accordingly.
+We aimed to make use of the given Hugging Face Model for Emotion Recognition combined with Gemini API to build a mental health therapy platform. This platform is powered by two micro-agents implemented using the the uagents library.
 
 ### 🔗 Content
 
@@ -27,37 +27,27 @@ We aimed to make use of the given model to build a mental health therapy platfor
 
 ### 👨‍👦‍👦 Team
 
+- `Pratham Shankhwalker` -  *Python* - [LinkedIn](https://www.linkedin.com/in/pratham-shankwalker-ab2899205/), [GitHub](https://github.com/prathamshankwalker), [Instagram](https://www.instagram.com/prathamshankwalker/)  -  Machine Learning (ML) Developer
+
 - `Atharva Parkhe` -  *Python* -   [LinkedIn](https://www.linkedin.com/in/atharva-parkhe-3283b2202/), [GitHub](https://github.com/atharvparkhe), [Instagram](https://www.instagram.com/atharvparkhe/) - Backend Developer
 
 - `Madem Greeshma` -  *JavaScript* - [LinkedIn](https://www.linkedin.com/in/m-greeshma/), [GitHub](https://github.com/Greeshma2903), [Instagram](https://www.instagram.com/prathamshankwalker/)  -  Frontend Developer
 
-- `Pratham Shankhwalker` -  *Python* - [LinkedIn](https://www.linkedin.com/in/pratham-shankwalker-ab2899205/), [GitHub](https://github.com/prathamshankwalker), [Instagram](https://www.instagram.com/prathamshankwalker/)  -  Machine Learning (ML) Developer
-
 
 ### 📋 Features
 
-- **USER AUTHENTICATION :** Users can Signup for a new account, Verify thier email id, Login using email and password, make a Forgot request to reset thier password.
+- **USER'S Mental Health Assessment :** We are analysing our user's mental health dynamically while he/she is chatting with our AI Agent. After a conversation we give a detailed mental health assessment report to the user based on the detected emotions and problems.
 
-- **PRODUCTS AND BLOGS :** Users can view all products and blogs.
+- **Mental Health Therapist Reccomendation :** If the user's assessment report shows signs of depression, anxiety or any other mental health issues that are SEVERE then we reccomend top 5 mental health therapists based on user's location.
 
-- **REVIEWS AND RATING :** User can add blogs comments, product review and rateings.
+- **Mental Health Resources :** We provide a list of mental health resources like helplines, websites,videos and support groups to the user based on their location for users having MILD symptoms. 
 
-- **CONTACT US FORM :** User can fill up the Contact Us form. (Auto Corrospondence email sending feature)
-
-- **CART FUNCTIONALITY :** User can add and remove products from cart. Users can also change the quantity of items in thier cart.
-
-- **PAYMENT GATEWAY :** Users can make payment using Net-Banking, UPI, Card Payments, etc. through Razorpay Payment Gateway which is integrated in the system.
-
-- **AUTO INVOICE :** After payment, users would recieve invoice (auto-generated) in thier mailbox.
+- **Dedicated WhatsApp Bot :** We have also built the same AI Chatbot on WhatsApp platform using the WhatApp Cloud APIs and Custom Webhooks. So users can also chat with our AI therapist on WhatsApp for 24/7 support.
 
 
 ### 🧰 Tech Stack
 
-- **`BACKEND`** : Django *(Python)*
-
-- **`DATABASE`** : SQLite3
-
-- **`FRONTEND`** : HTML, CSS, Javascript
+- **`Libraries Used`** : Uagents, Flask, Langchain, Google-generativeai,transformers *(Python)*
 
 
 ### 🔐 Environment Variables

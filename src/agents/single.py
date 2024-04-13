@@ -3,7 +3,6 @@ from uagents import Model, Agent, Bureau, Context
 # import os
 # from dotenv import load_dotenv
 
-from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain
 
@@ -233,7 +232,15 @@ async def user_message_handler(ctx: Context, sender: str, message: ai_message):
 
     else:
         ctx.logger.info(
-            "We have analysed your condition and we think that you can get back into shape by doing this course : "
+            """We have analysed your condition and we think that you can get back into shape easily! We have analysed your condition and we think that you can get back into shape easily with some self-care!
+             Here are some resources for you :
+
+1. https://www.verywellmind.com/ - *Blogs for self care*
+2. https://www.psychcentral.com/ -*Blogs for Mental Health awareness*
+3. https://www.amahahealth.com/therapy- *Website for booking mental health appointments*
+
+Govt Helpline :
+ 24/7 toll-free mental health rehabilitation helpline is 1800-599-0019, also known as Kiran. This helpline is available in 13 languages and was launched by the Ministry of Social Justice and Empowerment to provide support to people with mental illness."""
         )
 
 
