@@ -1,7 +1,5 @@
-import sys
-import os
+import logging, sys,  os
 from dotenv import load_dotenv
-import logging
 
 
 def load_configurations(app):

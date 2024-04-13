@@ -7,5 +7,4 @@ transformers
 sentencepiece
 torch
 pandas
-pymongo
 flask

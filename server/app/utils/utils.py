@@ -1,53 +1,52 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain
+from .therapist import get_top_5_therapists
 from transformers import AutoTokenizer, AutoModelWithLMHead
-import warnings, json, re
+import warnings, re, json
 
 
+# To suppress the first warning shown on the terminal
 warnings.filterwarnings(
     "ignore", category=FutureWarning
-)  # To suppress the first warning
+)
 warnings.filterwarnings("ignore", category=UserWarning)
 tokenizer = AutoTokenizer.from_pretrained(
     "mrm8488/t5-base-finetuned-emotion", use_fast=False, legacy=False
 )
 
+# t5 Model
 model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 
-
+# get emotions
 def get_emotion(text):
     input_ids = tokenizer.encode(text + "</s>", return_tensors="pt")
-
     output = model.generate(input_ids=input_ids, max_length=2)
-
     dec = [tokenizer.decode(ids) for ids in output]
     label = dec[0]
     label = re.sub(r"<pad>", "", label)
-    # return label
     return label
 
-
+# Gemini Init
 llm = ChatGoogleGenerativeAI(
     model="gemini-pro", google_api_key="AIzaSyA0SThtOf3QoNJLr12CiDwkiTtUafL1rXE"
 )
 
-
-
+# write to file
 def append_to_file(filename, value):
     with open(filename, "a") as file:
         file.write(str(value) + "\n")  # Convert value to string and add newline
 
-
+# read from file
 def read_file_as_string(filename):
     with open(filename, "r") as file:
         return file.read()
 
 
-def generate_gpt_response(user_message, filename):
+# generate response from gemini
+def generate_gpt_response(user_message):
     user_message = user_message
-    filename = filename
-    conversation_history = read_file_as_string(filename=filename)
+    conversation_history = read_file_as_string(filename="app/utils/msgs.txt")
 
     conv_prompt = PromptTemplate.from_template(
         """You are an expert mental therapist./
@@ -73,6 +72,7 @@ def generate_gpt_response(user_message, filename):
     return response
 
 
+# generate report from conversation
 def generate_final_report(data):
     # filename=filename
     data = data
@@ -96,3 +96,25 @@ def generate_final_report(data):
     response = conv_chain.run(conversation_history=data)
     return response
 
+
+# generate message response
+def generate_response(response):
+    user_resp=response
+    if response.lower() == "hi" or response.lower() == "hello" or response.lower() == "hay":
+        initial_msg = "Hello👋🏻, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? "
+        return initial_msg
+    elif response.lower() == "bye":
+        conv_history=read_file_as_string("app/utils/msgs.txt")
+        response=generate_final_report(conv_history)
+        response = json.loads(response)
+        if response["condition_of_patient"] == "severe":
+            therapists = get_top_5_therapists(city="mumbai")
+            resp=f"We have analysed your condition and we think that you should consult to a therapist. Here are top 5 therapists in Mumbai : \n {therapists}"
+        else:
+            resp= "We have analysed your condition and we think that you can get back into shape by doing this course : "
+        return resp
+    else:
+        response=generate_gpt_response(user_message=response)
+        response_to_store=f"User : {user_resp}, AI Agent : {response}"
+        append_to_file(filename="app/utils/msgs.txt",value=response_to_store)
+    return response
