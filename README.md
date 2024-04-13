@@ -47,20 +47,25 @@ We aimed to make use of the given Hugging Face Model for Emotion Recognition com
 
 ### 🧰 Tech Stack
 
-- **`Libraries Used`** : Uagents, Flask, Langchain, Google-generativeai,transformers *(Python)*
+- **`Libraries Used`** : uAgents, Flask, Langchain, Google-generativeai,transformers *(Python)*
 
 
 ### 🔐 Environment Variables
 
 To run this project, you will need to add the following environment variables to your **.env** file
 
-- `EMAIL_ID`  -  Email ID (which would be used to send emails)
+- `ACCESS_TOKEN`  - Enter_your_whats_app_access_token
 
-- `EMAIL_PW`  -  Email Password
+- `APP_ID`  -  enter_your_whats_app_app_id
 
-- `PUBLIC_KEY` - Razorpay API Public Key
+- `APP_SECRET` - enter_your_whats_app_app_secret
 
-- `PRIVATE_KEY` - Razorpay API Private Key
+- `RECIPIENT_WAID`- enter_your_whats_app_message_recipiant_number
+- `VERSION` - whats_app_graph_api_version
+- `PHONE_NUMBER_ID` - enter_whats_app_test_phone_number
+- `VERIFY_TOKEN`- enter_your_whats_app_verificaiton_token
+- `GEMINI_API_KEY` - enter_your_gemini_access_key
+
 
 ![ENV file](docs/env.png)
 
@@ -129,4 +134,4 @@ The docs folder contain all the project documentations and screenshots of the pr
 
 ### 🧑🏻‍💻 Demo
 
-YouTube Link : 
+Drive Link : 
