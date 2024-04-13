@@ -117,25 +117,43 @@ pip install --upgrade pip -r requirements.txt
 python two_agents.py
 ```
 
+**_Step#6 : **[FOR WHATS APP]** Run the agents in the terminal and start interacting_**
+
+```bash
+cd server
+```
+
+```bash
+python run.py
+```
+
+```bash
+ngrok http 8000 --domain accurately-frank-wombat.ngrok-free.app
+```
+
 _Check the terminal if any error._
 
 ### 📄 Documentation
 
 The docs folder contain all the project documentations and screenshots of the project.
 
-**Local Server Base Link :** http://localhost:8000/
+- **Local Server Base Link :** http://localhost:8000/
 
-**Ngroc Server Link (Not Permament) :** https://accurately-frank-wombat.ngrok-free.app
+- **Ngroc Server Link (Not Permament) :** https://accurately-frank-wombat.ngrok-free.app
 
 ### 🧑🏻‍💻 Demo
 
-Drive Link :
+- Demo Link 1 : https://youtu.be/9Ec6OQ3AgxY
+
+- Demo Link 2 : https://youtu.be/3N4rVFrFyrI
 
 ### Whatsapp Demo
 
 We implemented the agents and integrate it into the Whatsapp API. This is a long form chat version, where the user can interact with agent with more than 1 message, after which a detailed analysis of the conversation is done. This analysis leads to the user being suggested a list of therapists he can approach.
 
-## Screenshots
+![ENV file](docs/whatsapp.png)
+
+## 📸 Screenshots
 
 ![alt text](image.png)
 
