@@ -1,13 +1,14 @@
-from uagents import Model, Agent, Context
+from uagents import Model, Agent, Context, Protocol
 from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain
-import json
 import pandas as pd
 from transformers import AutoTokenizer, AutoModelWithLMHead
 import warnings
 import re
 from langchain_google_genai import ChatGoogleGenerativeAI
+from uagents.setup import fund_agent_if_low
+from pydantic import Field
 
 warnings.filterwarnings(
     "ignore", category=FutureWarning
@@ -32,93 +33,47 @@ def get_emotion(text):
     return label
 
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-pro", google_api_key="AIzaSyA0SThtOf3QoNJLr12CiDwkiTtUafL1rXE"
-)
-
-
-def append_to_file(filename, value):
-    """Appends a value to the given text file.
-
-    Args:
-        filename: The name of the text file.
-        value: The value to be appended (can be any data type that can be converted to a string).
-    """
-    with open(filename, "a") as file:
-        file.write(str(value) + "\n")  # Convert value to string and add newline
-
-
-def read_file_as_string(filename):
-    with open(filename, "r") as file:
-        return file.read()
-
-
-def generate_response(user_message, filename):
-    user_message = user_message
-    filename = filename
-    conversation_history = read_file_as_string(filename=filename)
-
-    conv_prompt = PromptTemplate.from_template(
-        """You are an expert mental therapist./
-        Your task is to confront the user for his problems and ask critical questions to understand his mental health. You have to somehow ask the user about his symptoms, possible causes(relationship issues, health issues, sad demise) and carry on the conversation. The following is the conversation so far, continue asking questions. \
-        Speak with the user in a very assistive and helpful manner.
-
-    **Conversation History:**
-
-    {conversation_history}
-
-    **User Input:**
-
-    {user_input}
-
-    **Respond:**"""
-    )
-
-    conv_chain = LLMChain(llm=llm, prompt=conv_prompt, verbose=False)
-    response = conv_chain.run(
-        conversation_history=conversation_history, user_input=user_message
-    )
-    return response
-
-
-# Example file in which temporary chat is stored
-filename = "src/agents/msgs.txt"
-
-
 class user_message(Model):
-    msg: str
+    msg: str = Field(
+        description="Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you?"
+    )
 
 
 class ai_message(Model):
     msg: str
 
 
+# Set a unique identifier for your agent
+SEED_PHRASE = "Gemini based emotion recognition model"
+
+AGENT_MAILBOX_KEY = "d4d8db58-1a12-4549-92b9-51de6ea7662a"
+
+assProtocol = Protocol("Assistant Protocol")
+
 ass_agent = Agent(
     "Assistant",
-    seed="I am here to help",
-    port=8001,
-    endpoint=["http://127.0.0.1:8001/submit"],
+    seed=SEED_PHRASE,
+    mailbox=f"{AGENT_MAILBOX_KEY}@https://agentverse.ai",
 )
 
-THERAPY_AGENT_ADD = "agent1qvkvy5x6s0h56hqulq0nn0ucqsc8lrpkmkupthr0qjs4nfel2ufmsrz6mpg"
+# Ensure the agent has enough funds to operate, if not, fund it
+fund_agent_if_low(ass_agent.wallet.address())
+
+THERAPY_AGENT_ADD = "agent1qd52csugatsjvzsm7xyfufqx940qe9cfu7f50chvm8z2dpama6a8vm7hjwd"
 
 
-@ass_agent.on_event("startup")
-async def startup(ctx: Context):
-    # global conversation_history
-    ctx.storage.set("filename", "src/agents/msgs.txt")
-    # assessment agent msg
-    initial_msg = "Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? "
-    ctx.logger.info(initial_msg)
-    # take user input
-    user_input = input("User : ")
+@assProtocol.on_message(model=user_message, replies={ai_message})
+async def startup(ctx: Context, sender: str, message: ai_message):
+    ctx.logger.info(message.msg)
     # derive user emotion using hugging face api
-    emotion = get_emotion(user_input)
-    user_msg_store = f" User : {user_input} ->[emotion prediction : {emotion}]"
-    conversation = f"Assessment Agent: {initial_msg} \n\n User: {user_msg_store}"
+    emotion = get_emotion(message.msg)
+    user_msg_store = f" User : {message.msg} ->[emotion prediction : {emotion}]"
+    conversation = f"Assessment Agent: Hello, I am Leo. I'm here to listen to your concerns and help you in any way I can. Can you tell me a little bit about what's been troubling you? \n\n User: {user_msg_store}"
 
     await ctx.send(THERAPY_AGENT_ADD, ai_message(msg=conversation))
 
+
+ass_agent.include(assProtocol)
 
 if __name__ == "__main__":
     ass_agent.run()
